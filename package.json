@@ -1,0 +1,18 @@
+{
+  "name": "covid-api",
+  "version": "1.0.0",
+  "description": "Covid RESTful API",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql": "^2.18.1",
+    "nodemon": "^3.1.9"
+  }
+}
