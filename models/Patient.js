@@ -55,6 +55,7 @@ class Patient {
         `;
         const { name, phone, address, status, in_date_at, out_date_at } =
             patientData;
+
         return new Promise((resolve, reject) => {
             db.query(
                 query,
@@ -88,6 +89,7 @@ class Patient {
         `;
         const { name, phone, address, status, in_date_at, out_date_at } =
             updatedData;
+
         return new Promise((resolve, reject) => {
             db.query(
                 query,
@@ -161,6 +163,18 @@ class Patient {
      * @returns {Promise<Array>} - Data pasien dengan status yang cocok.
      */
     static async getByStatus(status) {
+        // Validasi status sebelum query
+        const validStatuses = ['recovered', 'positive', 'dead'];
+        if (!validStatuses.includes(status)) {
+            return Promise.reject(
+                new Error(
+                    `Invalid status: ${status}. Allowed values: ${validStatuses.join(
+                        ', '
+                    )}`
+                )
+            );
+        }
+
         const query = 'SELECT * FROM patients WHERE status = ?';
         return new Promise((resolve, reject) => {
             db.query(query, [status], (err, results) => {

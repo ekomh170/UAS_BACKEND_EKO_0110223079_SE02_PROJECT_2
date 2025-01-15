@@ -10,14 +10,11 @@ class PatientController {
     async index(req, res, next) {
         try {
             const patients = await Patient.getAll();
-            if (!patients || patients.length === 0) {
-                return res.status(200).json({
-                    message: 'No patients found.',
-                    data: [],
-                });
-            }
             res.status(200).json({
-                message: 'Successfully fetched all patients.',
+                message:
+                    patients.length > 0
+                        ? 'Successfully fetched all patients.'
+                        : 'No patients found.',
                 data: patients,
             });
         } catch (error) {
@@ -34,9 +31,7 @@ class PatientController {
         try {
             const patient = await Patient.getById(req.params.id);
             if (!patient) {
-                return res.status(404).json({
-                    message: 'Patient not found.',
-                });
+                return res.status(404).json({ message: 'Patient not found.' });
             }
             res.status(200).json({
                 message: 'Successfully fetched patient details.',
@@ -73,7 +68,6 @@ class PatientController {
                 in_date_at,
                 out_date_at,
             });
-
             res.status(201).json({
                 message: 'Patient created successfully.',
                 data: newPatient,
@@ -96,9 +90,7 @@ class PatientController {
             );
 
             if (!updatedPatient) {
-                return res.status(404).json({
-                    message: 'Patient not found.',
-                });
+                return res.status(404).json({ message: 'Patient not found.' });
             }
 
             res.status(200).json({
@@ -120,9 +112,7 @@ class PatientController {
             const deleted = await Patient.delete(req.params.id);
 
             if (!deleted) {
-                return res.status(404).json({
-                    message: 'Patient not found.',
-                });
+                return res.status(404).json({ message: 'Patient not found.' });
             }
 
             res.status(200).json({
@@ -142,14 +132,11 @@ class PatientController {
         try {
             const patients = await Patient.searchByName(req.params.name);
 
-            if (!patients || patients.length === 0) {
-                return res.status(404).json({
-                    message: 'No patients found matching the search.',
-                });
-            }
-
             res.status(200).json({
-                message: 'Patients search results.',
+                message:
+                    patients.length > 0
+                        ? 'Patients search results.'
+                        : 'No patients found matching the search.',
                 data: patients,
             });
         } catch (error) {
@@ -160,41 +147,33 @@ class PatientController {
 
     /**
      * Get patients by status
-     * Mendapatkan semua pasien berdasarkan status tertentu.
+     * Mengambil data pasien berdasarkan status tertentu.
      */
-    async positive(req, res, next) {
-        this.getByStatus(req, res, next, 'positive');
-    }
+    async getByStatus(req, res, next) {
+        const { status } = req.params;
 
-    async recovered(req, res, next) {
-        this.getByStatus(req, res, next, 'recovered');
-    }
+        // Validasi nilai status
+        const validStatuses = ['recovered', 'positive', 'dead'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                message: `Invalid status. Allowed values: ${validStatuses.join(
+                    ', '
+                )}`,
+            });
+        }
 
-    async dead(req, res, next) {
-        this.getByStatus(req, res, next, 'dead');
-    }
-
-    /**
-     * Helper function to get patients by status
-     * Mengambil pasien berdasarkan status dengan query umum.
-     */
-    async getByStatus(req, res, next, status) {
         try {
             const patients = await Patient.getByStatus(status);
 
-            if (!patients || patients.length === 0) {
-                return res.status(404).json({
-                    message: `No patients found with status: ${status}`,
-                });
-            }
-
             res.status(200).json({
-                message: `Successfully fetched ${status} patients.`,
-                total: patients.length,
+                message:
+                    patients.length > 0
+                        ? `Patients with status: ${status}.`
+                        : `No patients found with status: ${status}.`,
                 data: patients,
             });
         } catch (error) {
-            console.error(`Error in getByStatus (${status}):`, error);
+            console.error('Error in getByStatus:', error);
             next(error);
         }
     }

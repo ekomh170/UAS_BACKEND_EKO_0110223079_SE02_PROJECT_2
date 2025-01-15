@@ -52,9 +52,7 @@ router.get('/patients/search/:name', PatientController.search);
 
 // Get Patients by Status
 // Endpoint untuk mendapatkan data pasien berdasarkan status
-router.get('/patients/status/positive', PatientController.positive);
-router.get('/patients/status/recovered', PatientController.recovered);
-router.get('/patients/status/dead', PatientController.dead);
+router.get('/patients/status/:status', PatientController.getByStatus);
 
 // Export router
 module.exports = router;
